@@ -1,0 +1,83 @@
+
+Noms :
+Numéros de dossier (NI) :
+
+Correction
+==========
+
+/2 : Position.positions_diagonales_haut()
+     Commentaires :
+
+/3 : Position.quatre_positions_diagonales()
+     Commentaires :
+
+/3 : Position.quatre_positions_saut()
+     Commentaires :
+
+/3 : Tests unitaires de la classe Position
+     Commentaires :
+
+/3 : Damier.position_est_dans_damier()
+     Commentaires :
+
+/5 : Damier.piece_peut_se_deplacer_vers()
+     Commentaires :
+
+/5 : Damier.piece_peut_sauter_vers()
+     Commentaires :
+
+/3 : Damier.piece_peut_se_deplacer()
+     Commentaires :
+
+/3 : Damier.piece_peut_faire_une_prise()
+     Commentaires :
+
+/3 : Damier.piece_de_couleur_peut_se_deplacer()
+     Commentaires :
+
+/3 : Damier.piece_de_couleur_peut_faire_une_prise()
+     Commentaires :
+
+/6 : Damier.deplacer()
+     Commentaires :
+
+/4 : Tests unitaires de la classe Damier
+     Commentaires :
+
+/5 : Partie.position_source_valide()
+     Commentaires :
+
+/5 : Partie.position_cible_valide()
+     Commentaires :
+
+/6 : Partie.demander_positions_deplacement()
+     Commentaires :
+
+/6 : Partie.tour()
+     Commentaires :
+
+Fonctionnalités pour interface graphique
+----------------------------
+/3 : Les pièces peuvent être déplacées sur le damier x
+/3 : Les déplacements invalides ne sont pas acceptés x
+/3 : On peut choisir une nouvelle pièce source après un mouvement invalide x
+/3 : Si une prise est possible, elle est obligatoire x
+/3 : Les prises multiples sont gérées correctement
+/3 : Le tour des joueurs est alterné correctement x
+/3 : On peut créer une nouvelle partie
+/3 : On peut quitter le jeu
+/3 : Une rétroaction est donnée à l'utilisateur (messages)
+/3 : Affiche la couleur du joueur qui doit faire un déplacement (tour courant) x
+
+/2 : Qualité du code
+     Commentaires :
+
+
+Pénalités :
+
+
+Commentaires du correcteur :
+
+
+
+Total : /100
