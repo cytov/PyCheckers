@@ -1,7 +1,7 @@
 # Auteurs: À compléter
 
-from tp3.Partie1.piece import Piece
-from tp3.Partie1.position import Position
+from Partie1.piece import Piece
+from Partie1.position import Position
 
 
 class Damier:
@@ -78,7 +78,8 @@ class Damier:
             bool: True si la position est dans les bornes, False autrement.
 
         """
-        #TODO: À compléter
+        # On utilise n_lignes et n_colonnes a la place de "8" pour pouvoir changer n dans le futur si on le veut.
+        return position.ligne in range(self.n_lignes) and position.colonne in range(self.n_colonnes)
 
     def piece_peut_se_deplacer_vers(self, position_piece, position_cible):
         """Cette méthode détermine si une pièce (à la position reçue) peut se déplacer à une certaine position cible.
@@ -99,7 +100,60 @@ class Damier:
             bool: True si la pièce peut se déplacer à la position cible, False autrement.
 
         """
-        #TODO: À compléter
+        piece = self.recuperer_piece_a_position(position_piece)
+
+        if piece is None:
+            return False
+
+        else:
+            if piece.est_dame():
+                return position_cible in Position.quatre_positions_diagonales(position_piece) and self.recuperer_piece_a_position(position_cible) is None
+            elif piece.est_noire():
+                return position_cible in Position.positions_diagonales_bas(position_piece) and self.recuperer_piece_a_position(position_cible) is None
+            elif piece.est_blanche():
+                return position_cible in Position.positions_diagonales_haut(position_piece) and self.recuperer_piece_a_position(position_cible) is None
+
+    def pion_noir_peut_se_deplacer_vers(self, position_piece_noir, position_cible):
+        """Cette méthode détermine si un pion noir peut se déplacer à une certaine position cible.
+        On parle ici d'un déplacement standard (et non une prise).
+
+        Args:
+            position_piece_noir (Piece): La position de la pièce noire source du déplacement.
+            position_cible (Position): La position cible du déplacement.
+
+        Returns:
+            bool: True si la pièce peut se déplacer à la position cible, False autrement.
+
+        """
+        return position_cible in Position.position_diagonales_bas(position_piece_noir) and self.recuperer_piece_a_position(position_cible) is None
+
+    def pion_blanc_peut_se_deplacer_vers(self, position_piece_blanc, position_cible):
+        """Cette méthode détermine si un pion blanc peut se déplacer à une certaine position cible.
+        On parle ici d'un déplacement standard (et non une prise).
+
+        Args:
+            position_piece_blanc (Piece): La position de la pièce blanche source du déplacement.
+            position_cible (Position): La position cible du déplacement.
+
+        Returns:
+            bool: True si la pièce peut se déplacer à la position cible, False autrement.
+
+        """
+        return position_cible in Position.position_diagonales_haut(position_piece_blanc) and self.recuperer_piece_a_position(position_cible) is None
+
+    def dame_peut_se_deplacer_vers(self, position_dame, position_cible):
+        """Cette méthode détermine si une dame peut se déplacer à une certaine position cible.
+        On parle ici d'un déplacement standard (et non une prise).
+
+        Args:
+            position_dame (Piece): La position de la pièce dame source du déplacement.
+            position_cible (Position): La position cible du déplacement.
+
+        Returns:
+            bool: True si la pièce peut se déplacer à la position cible, False autrement.
+
+        """
+        return position_cible in Position.quatre_positions_diagonales(position_dame) and self.recuperer_piece_a_position(position_cible) is None
 
     def piece_peut_sauter_vers(self, position_piece, position_cible):
         """Cette méthode détermine si une pièce (à la position reçue) peut sauter vers une certaine position cible.
@@ -120,6 +174,7 @@ class Damier:
 
         """
         #TODO: À compléter
+
 
     def piece_peut_se_deplacer(self, position_piece):
         """Vérifie si une pièce à une certaine position a la possibilité de se déplacer (sans faire de saut).
