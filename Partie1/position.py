@@ -72,6 +72,19 @@ class Position:
 
         return [positions_intermediaires[n].quatre_positions_diagonales()[n] for n in range(4)]
 
+    def trouver_position_milieu_saut(self, position_piece, position_cible):
+        """Cette méthode détermine la position diagonale entre une position de depart, et une position cible de saut
+
+        Args:
+            position_piece (Position): La position de la pièce source du saut.
+            position_cible (Position): La position cible du saut.
+
+        Returns:
+            Position: La position au milieu du saut.
+
+        """
+        return self.__init__((position_piece.ligne + position_cible.ligne) // 2, (position_piece.colonne + position_cible.colonne) // 2)
+
     def __eq__(self, other):
         """Méthode spéciale indiquant à Python comment vérifier si deux positions sont égales. On compare simplement
         la ligne et la colonne de l'objet actuel et de l'autre objet.

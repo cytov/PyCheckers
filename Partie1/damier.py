@@ -102,9 +102,8 @@ class Damier:
         """
         piece = self.recuperer_piece_a_position(position_piece)
 
-        if piece is None:
+        if (piece is None) or self.position_est_dans_damier(position_cible):
             return False
-
         else:
             if piece.est_dame():
                 return position_cible in Position.quatre_positions_diagonales(position_piece) and self.recuperer_piece_a_position(position_cible) is None
@@ -112,48 +111,6 @@ class Damier:
                 return position_cible in Position.positions_diagonales_bas(position_piece) and self.recuperer_piece_a_position(position_cible) is None
             elif piece.est_blanche():
                 return position_cible in Position.positions_diagonales_haut(position_piece) and self.recuperer_piece_a_position(position_cible) is None
-
-    def pion_noir_peut_se_deplacer_vers(self, position_piece_noir, position_cible):
-        """Cette méthode détermine si un pion noir peut se déplacer à une certaine position cible.
-        On parle ici d'un déplacement standard (et non une prise).
-
-        Args:
-            position_piece_noir (Piece): La position de la pièce noire source du déplacement.
-            position_cible (Position): La position cible du déplacement.
-
-        Returns:
-            bool: True si la pièce peut se déplacer à la position cible, False autrement.
-
-        """
-        return position_cible in Position.position_diagonales_bas(position_piece_noir) and self.recuperer_piece_a_position(position_cible) is None
-
-    def pion_blanc_peut_se_deplacer_vers(self, position_piece_blanc, position_cible):
-        """Cette méthode détermine si un pion blanc peut se déplacer à une certaine position cible.
-        On parle ici d'un déplacement standard (et non une prise).
-
-        Args:
-            position_piece_blanc (Piece): La position de la pièce blanche source du déplacement.
-            position_cible (Position): La position cible du déplacement.
-
-        Returns:
-            bool: True si la pièce peut se déplacer à la position cible, False autrement.
-
-        """
-        return position_cible in Position.position_diagonales_haut(position_piece_blanc) and self.recuperer_piece_a_position(position_cible) is None
-
-    def dame_peut_se_deplacer_vers(self, position_dame, position_cible):
-        """Cette méthode détermine si une dame peut se déplacer à une certaine position cible.
-        On parle ici d'un déplacement standard (et non une prise).
-
-        Args:
-            position_dame (Piece): La position de la pièce dame source du déplacement.
-            position_cible (Position): La position cible du déplacement.
-
-        Returns:
-            bool: True si la pièce peut se déplacer à la position cible, False autrement.
-
-        """
-        return position_cible in Position.quatre_positions_diagonales(position_dame) and self.recuperer_piece_a_position(position_cible) is None
 
     def piece_peut_sauter_vers(self, position_piece, position_cible):
         """Cette méthode détermine si une pièce (à la position reçue) peut sauter vers une certaine position cible.
@@ -173,8 +130,16 @@ class Damier:
             bool: True si la pièce peut sauter vers la position cible, False autrement.
 
         """
-        #TODO: À compléter
+        piece = self.recuperer_piece_a_position(position_piece)
 
+        if (piece is None) or (self.recuperer_piece_a_position(position_cible) is not None) or (not self.position_est_dans_damier(position_cible)):
+            return False
+        elif position_cible not in Position.quatre_positions_sauts(position_piece):
+            return False
+        elif self.recuperer_piece_a_position(Position.trouver_position_milieu_saut(position_piece, position_cible)) is None:
+            return False
+        else:
+            return True
 
     def piece_peut_se_deplacer(self, position_piece):
         """Vérifie si une pièce à une certaine position a la possibilité de se déplacer (sans faire de saut).
