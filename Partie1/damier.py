@@ -62,7 +62,7 @@ class Damier:
             La pièce (de type Piece) à la position reçue en argument, ou None si aucune pièce n'était à cette position.
 
         """
-        if position not in self.cases:
+        if position not in self.cases.keys():
             return None
 
         return self.cases[position]
@@ -102,15 +102,15 @@ class Damier:
         """
         piece = self.recuperer_piece_a_position(position_piece)
 
-        if (piece is None) or self.position_est_dans_damier(position_cible):
+        if (piece is None) or not self.position_est_dans_damier(position_cible):
             return False
         else:
             if piece.est_dame():
-                return position_cible in Position.quatre_positions_diagonales(position_piece) and self.recuperer_piece_a_position(position_cible) is None
+                return position_cible in position_piece.quatre_positions_diagonales() and self.recuperer_piece_a_position(position_cible) is None
             elif piece.est_noire():
-                return position_cible in Position.positions_diagonales_bas(position_piece) and self.recuperer_piece_a_position(position_cible) is None
+                return position_cible in position_piece.positions_diagonales_bas() and self.recuperer_piece_a_position(position_cible) is None
             elif piece.est_blanche():
-                return position_cible in Position.positions_diagonales_haut(position_piece) and self.recuperer_piece_a_position(position_cible) is None
+                return position_cible in position_piece.positions_diagonales_haut() and self.recuperer_piece_a_position(position_cible) is None
 
     def piece_peut_sauter_vers(self, position_piece, position_cible):
         """Cette méthode détermine si une pièce (à la position reçue) peut sauter vers une certaine position cible.
@@ -131,12 +131,14 @@ class Damier:
 
         """
         piece = self.recuperer_piece_a_position(position_piece)
+        position_milieu_saut = Position((position_piece.ligne + position_cible.ligne) // 2, (position_piece.colonne + position_cible.colonne) // 2)
+        piece_cible = self.recuperer_piece_a_position(position_milieu_saut)
 
         if (piece is None) or (self.recuperer_piece_a_position(position_cible) is not None) or (not self.position_est_dans_damier(position_cible)):
             return False
-        elif position_cible not in Position.quatre_positions_sauts(position_piece):
+        elif position_cible not in position_piece.quatre_positions_sauts():
             return False
-        elif self.recuperer_piece_a_position(Position.trouver_position_milieu_saut(position_piece, position_cible)) is None:
+        elif (piece_cible is None) or (piece_cible.couleur == piece.couleur):
             return False
         else:
             return True
@@ -154,7 +156,10 @@ class Damier:
             bool: True si une pièce est à la position reçue et celle-ci peut se déplacer, False autrement.
 
         """
-        #TODO: À compléter
+        for position in position_piece.quatre_positions_diagonales():
+            if self.piece_peut_se_deplacer_vers(position_piece, position):
+                return True
+        return False
 
     def piece_peut_faire_une_prise(self, position_piece):
         """Vérifie si une pièce à une certaine position a la possibilité de faire une prise.
@@ -170,7 +175,10 @@ class Damier:
             bool: True si une pièce est à la position reçue et celle-ci peut faire une prise. False autrement.
 
         """
-        #TODO: À compléter
+        for position in position_piece.quatre_positions_sauts():
+            if self.piece_peut_sauter_vers(position_piece, position):
+                return True
+        return False
 
     def piece_de_couleur_peut_se_deplacer(self, couleur):
         """Vérifie si n'importe quelle pièce d'une certaine couleur reçue en argument a la possibilité de se déplacer
@@ -184,7 +192,11 @@ class Damier:
         Returns:
             bool: True si une pièce de la couleur reçue peut faire un déplacement standard, False autrement.
         """
-        #TODO: À compléter
+        for key in self.cases.keys():
+            if self.cases[key].couleur == couleur:
+                if self.piece_peut_se_deplacer(key):
+                    return True
+        return False
 
     def piece_de_couleur_peut_faire_une_prise(self, couleur):
         """Vérifie si n'importe quelle pièce d'une certaine couleur reçue en argument a la possibilité de faire un
@@ -199,7 +211,11 @@ class Damier:
         Returns:
             bool: True si une pièce de la couleur reçue peut faire un saut (une prise), False autrement.
         """
-        #TODO: À compléter
+        for key in self.cases.keys():
+            if self.cases[key].couleur == couleur:
+                if self.piece_peut_faire_une_prise(key):
+                    return True
+        return False
 
     def deplacer(self, position_source, position_cible):
         """Effectue le déplacement sur le damier. Si le déplacement est valide, on doit mettre à jour le dictionnaire
@@ -224,8 +240,39 @@ class Damier:
                 "erreur" autrement.
 
         """
-        #TODO: À compléter
+        # Cas de déplacement seul:
+        if self.piece_peut_se_deplacer_vers(position_source, position_cible):
+            self.cases[position_cible] = self.cases.pop(position_source)
+            if self.check_promotion(position_source, position_cible):
+                self.cases[position_cible].promouvoir()
+            return "ok"
+        # Cas de prise:
+        elif self.piece_peut_sauter_vers(position_source, position_cible):
+            position_milieu_saut = Position((position_source.ligne + position_cible.ligne) // 2, (position_source.colonne + position_cible.colonne) // 2)
+            self.cases[position_cible] = self.cases.pop(position_source)
+            self.cases.pop(position_milieu_saut)
+            if self.check_promotion(self, position_source, position_cible):
+                self.cases[position_cible].promouvoir()
+            return "prise"
+        else:
+            return "erreur"
 
+    def check_promotion(self, position_source, position_cible):
+        """Vérifie si un déplacement d'un position source a une position cible nécessite une promotion ou pas.
+
+        Args:
+            position_source (Position): La position source du déplacement.
+            position_cible (Position): La position cible du déplacement.
+
+        Returns:
+            bool: True si le déplacement nécessite une promotion, False autrement.
+        """
+        piece = self.recuperer_piece_a_position(position_source)
+
+        if position_cible.ligne in [0, 7]:
+            return piece.est_pion() and ((piece.est_blanche() and position_cible.ligne == 0) or (piece.est_noire() and position_cible.ligne == 7))
+        else:
+            return False
 
     def __repr__(self):
         """Cette méthode spéciale permet de modifier le comportement d'une instance de la classe Damier pour

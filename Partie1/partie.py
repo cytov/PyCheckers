@@ -1,7 +1,7 @@
 # Auteurs: À compléter
 
-from tp3.Partie1.damier import Damier
-from tp3.Partie1.position import Position
+from Partie1.damier import Damier
+from Partie1.position import Position
 
 
 class Partie:
@@ -43,8 +43,7 @@ class Partie:
         un message d'erreur indiquant la raison pourquoi la position n'est pas valide (ou une chaîne vide s'il n'y a pas
         d'erreur).
 
-        ATTENTION: Utilisez les attributs de la classe pour connaître les informations sur le jeu! (le damier, le joueur
-            actif, si une position source est forcée, etc.
+        ATTENTION: Utilisez les attributs de la classe pour connaître les informations sur le jeu! (le damier, le joueur actif, si une position source est forcée, etc.
 
         ATTENTION: Vous avez accès ici à un attribut de type Damier. vous avez accès à plusieurs méthodes pratiques
             dans le damier qui vous simplifieront la tâche ici :)
@@ -57,6 +56,17 @@ class Partie:
                  deuxième élément est un message d'erreur (ou une chaîne vide s'il n'y a pas d'erreur).
 
         """
+
+        piece = self.damier.recuperer_piece_a_position(position_source)
+
+        if piece is None:
+            return False, "La position sélectionnée ne contient pas une pièce."
+        elif piece.couleur != self.couleur_joueur_courant:
+            return False, "La piece sélectionnée n'appartient pas au joueur actif"
+        elif self.doit_prendre and position_source != self.position_source_forcee:
+            return False, f"le joueur doit prendre avec la pièce en position {self.position_source_forcee}"
+        else:
+            return True, ''
         #TODO: À compléter
 
     def position_cible_valide(self, position_cible):
@@ -70,6 +80,12 @@ class Partie:
                 a pas d'erreur).
 
         """
+        if self.doit_prendre and not self.damier.piece_peut_sauter_vers(self.position_source_selectionnee):
+            return False, "Joueur doit prendre"
+        elif not self.damier.piece_peut_se_deplacer_vers(self.position_source_selectionnee, position_cible):
+            return False, "Choix invalid"
+        else:
+            return True, ''
         #TODO: À compléter
 
     def demander_positions_deplacement(self):
@@ -82,6 +98,25 @@ class Partie:
             Position, Position: Un couple de deux positions (source et cible).
 
         """
+        pos_source = Position(-1, -1)
+        pos_cible = Position(-1, -1)
+
+        while not self.position_source_valide(pos_source)[0]:
+            x, y = input("Entrez une position du depart (deux valeurs separees par un espace)").split()
+            if x.isdigit() and y.isdigit():
+                pos_source = Position(int(x), int(y))
+                print(self.position_source_valide(pos_source)[1])
+            else: print("les valeurs entrees ne sont pas valides")
+        self.position_source_selectionnee = pos_source
+
+        while not self.position_cible_valide(pos_cible)[0]:
+            x, y = input("Entrez une position cible (deux valeurs separees par un espace)").split()
+            if x.isdigit() and y.isdigit():
+                pos_cible = Position(int(x), int(y))
+                print(self.position_cible_valide(pos_cible)[1])
+            else: print("les valeurs entrees ne sont pas valides")
+
+        return pos_source, pos_cible
         #TODO: À compléter
 
     def tour(self):
@@ -115,12 +150,27 @@ class Partie:
             print("")
 
         # Demander les positions
+        pos_source, pos_cible = self.demander_positions_deplacement()
         # TODO: À compléter
 
         # Effectuer le déplacement (à l'aide de la méthode du damier appropriée)
+        deplacement = self.damier.deplacer(pos_source, pos_cible)
+        if deplacement == "prise" and self.damier.piece_peut_faire_une_prise(pos_cible):
+            self.doit_prendre = True
+            self.position_source_forcee = pos_cible
+            return None
         # TODO: À compléter
 
         # Mettre à jour les attributs de la classe
+        self.position_source_selectionnee = None
+
+        if self.couleur_joueur_courant == "blanc":
+            self.couleur_joueur_courant = "noir"
+        else:
+            self.couleur_joueur_courant = "blanc"
+
+        self.position_source_selectionnee = None
+        self.position_source_forcee = None
         # TODO: À compléter
 
     def jouer(self):
