@@ -251,7 +251,7 @@ class Damier:
             position_milieu_saut = Position((position_source.ligne + position_cible.ligne) // 2, (position_source.colonne + position_cible.colonne) // 2)
             self.cases[position_cible] = self.cases.pop(position_source)
             self.cases.pop(position_milieu_saut)
-            if self.check_promotion(self, position_source, position_cible):
+            if self.check_promotion(position_source, position_cible):
                 self.cases[position_cible].promouvoir()
             return "prise"
         else:

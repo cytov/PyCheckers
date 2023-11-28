@@ -61,10 +61,22 @@ class Partie:
 
         if piece is None:
             return False, "La position sélectionnée ne contient pas une pièce."
+
         elif piece.couleur != self.couleur_joueur_courant:
             return False, "La piece sélectionnée n'appartient pas au joueur actif"
-        elif self.doit_prendre and position_source != self.position_source_forcee:
-            return False, f"le joueur doit prendre avec la pièce en position {self.position_source_forcee}"
+
+        elif self.doit_prendre:
+            if self.position_source_forcee is not None:
+                if position_source != self.position_source_forcee:
+                    return False, f"le joueur doit prendre avec la pièce en position {self.position_source_forcee}"
+            elif not self.damier.piece_peut_faire_une_prise(position_source):
+                return False, "Une prise est possible, le joueur doit choisir une position avec une prise"
+            else:
+                return True, ''
+
+        elif not (self.damier.piece_peut_se_deplacer(position_source) or self.damier.piece_peut_faire_une_prise(position_source)):
+            return False, "la piece sélectionnée n'a pas de mouvements possible"
+
         else:
             return True, ''
         #TODO: À compléter
@@ -80,10 +92,10 @@ class Partie:
                 a pas d'erreur).
 
         """
-        if self.doit_prendre and not self.damier.piece_peut_sauter_vers(self.position_source_selectionnee):
+        if self.doit_prendre and not self.damier.piece_peut_sauter_vers(self.position_source_selectionnee, position_cible):
             return False, "Joueur doit prendre"
-        elif not self.damier.piece_peut_se_deplacer_vers(self.position_source_selectionnee, position_cible):
-            return False, "Choix invalid"
+        elif not (self.damier.piece_peut_se_deplacer_vers(self.position_source_selectionnee, position_cible) or self.damier.piece_peut_sauter_vers(self.position_source_selectionnee, position_cible)):
+            return False, "Déplacement impossible"
         else:
             return True, ''
         #TODO: À compléter
@@ -102,19 +114,31 @@ class Partie:
         pos_cible = Position(-1, -1)
 
         while not self.position_source_valide(pos_source)[0]:
-            x, y = input("Entrez une position du depart (deux valeurs separees par un espace)").split()
+            # x, y = input("Entrez une position du depart (deux valeurs separees par un espace)").split()
+            # this approach caused issues when the user entered a different format than the one wanted.
+
+            x = input("Entrez la ligne du depart: ")
+            y = input("Entrez la colonne du depart: ")
+
             if x.isdigit() and y.isdigit():
                 pos_source = Position(int(x), int(y))
                 print(self.position_source_valide(pos_source)[1])
-            else: print("les valeurs entrees ne sont pas valides")
+
+            else:
+                print("les valeurs entrees ne sont pas valides")
         self.position_source_selectionnee = pos_source
 
         while not self.position_cible_valide(pos_cible)[0]:
-            x, y = input("Entrez une position cible (deux valeurs separees par un espace)").split()
+            # x, y = input("Entrez une position cible (deux valeurs separees par un espace)").split()
+            x = input("Entrez la ligne cible: ")
+            y = input("Entrez la colonne cible: ")
+
             if x.isdigit() and y.isdigit():
                 pos_cible = Position(int(x), int(y))
                 print(self.position_cible_valide(pos_cible)[1])
-            else: print("les valeurs entrees ne sont pas valides")
+
+            else:
+                print("les valeurs entrees ne sont pas valides")
 
         return pos_source, pos_cible
         #TODO: À compléter
