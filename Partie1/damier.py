@@ -79,7 +79,10 @@ class Damier:
 
         """
         # On utilise n_lignes et n_colonnes a la place de "8" pour pouvoir changer n dans le futur si on le veut.
-        return position.ligne in range(self.n_lignes) and position.colonne in range(self.n_colonnes)
+        if position.ligne in range(self.n_lignes) and position.colonne in range(self.n_colonnes):
+            return True
+        else:
+            return False
 
     def piece_peut_se_deplacer_vers(self, position_piece, position_cible):
         """Cette méthode détermine si une pièce (à la position reçue) peut se déplacer à une certaine position cible.
@@ -176,8 +179,9 @@ class Damier:
 
         """
         for position in position_piece.quatre_positions_sauts():
-            if self.piece_peut_sauter_vers(position_piece, position):
-                return True
+            if self.position_est_dans_damier(position):
+                if self.piece_peut_sauter_vers(position_piece, position):
+                    return True
         return False
 
     def piece_de_couleur_peut_se_deplacer(self, couleur):
@@ -213,7 +217,8 @@ class Damier:
         """
         for key in self.cases.keys():
             if self.cases[key].couleur == couleur:
-                if self.piece_peut_faire_une_prise(key):
+                position_piece = key
+                if self.piece_peut_faire_une_prise(position_piece):
                     return True
         return False
 
@@ -296,8 +301,48 @@ if __name__ == "__main__":
     print('Test unitaires de la classe "Damier"...')
 
     un_damier = Damier()
-
+    un_damier.cases = {
+        Position(7, 0): Piece("blanc", "pion"),
+        Position(7, 2): Piece("blanc", "pion"),
+        Position(7, 4): Piece("blanc", "pion"),
+        Position(7, 6): Piece("blanc", "pion"),
+        Position(6, 1): Piece("blanc", "pion"),
+        Position(6, 3): Piece("blanc", "pion"),
+        Position(6, 5): Piece("blanc", "pion"),
+        Position(6, 7): Piece("blanc", "pion"),
+        Position(5, 0): Piece("blanc", "pion"),
+        Position(5, 2): Piece("blanc", "pion"),
+        Position(5, 4): Piece("blanc", "pion"),
+        Position(5, 6): Piece("blanc", "pion"),
+        Position(2, 1): Piece("noir", "pion"),
+        Position(2, 3): Piece("noir", "pion"),
+        Position(2, 5): Piece("noir", "pion"),
+        Position(2, 7): Piece("noir", "pion"),
+        Position(1, 0): Piece("noir", "pion"),
+        Position(1, 2): Piece("noir", "pion"),
+        Position(1, 4): Piece("noir", "pion"),
+        Position(1, 6): Piece("noir", "pion"),
+        Position(0, 1): Piece("noir", "pion"),
+        Position(0, 3): Piece("noir", "pion"),
+        Position(0, 5): Piece("noir", "pion"),
+        Position(0, 7): Piece("noir", "pion"),
+    }
+    position_1_test = Position(5,4)
+    position_2_test = Position(8,5)
     # TODO: À compléter
+
+    assert un_damier.position_est_dans_damier(position_1_test) == True
+    assert un_damier.position_est_dans_damier(position_2_test) == False
+    assert un_damier.piece_peut_se_deplacer_vers(Position(5,0), Position(4,1)) == True
+    assert un_damier.piece_peut_se_deplacer_vers(position_2_test, Position(6,5)) == False
+    assert un_damier.piece_peut_sauter_vers(Position(5,0), Position(4,1)) == False
+    assert un_damier.piece_peut_sauter_vers(position_2_test, Position(6,5)) == False
+    assert un_damier.piece_peut_se_deplacer((Position(5,0))) == True
+    assert un_damier.piece_peut_se_deplacer((Position(0,5))) == False
+    assert un_damier.piece_peut_faire_une_prise((Position(5,0))) == False
+    assert un_damier.piece_peut_faire_une_prise((Position(0,5))) == False
+    assert un_damier.deplacer(Position(5,0), Position(4,1)) == "ok"
+    assert un_damier.deplacer(position_2_test, Position(6,5)) == "erreur"
 
     print('Test unitaires passés avec succès!')
 

@@ -58,7 +58,9 @@ class Position:
             list: La liste des quatre positions.
 
         """
-        return self.positions_diagonales_bas() + self.positions_diagonales_haut()
+
+        list = self.positions_diagonales_bas() + self.positions_diagonales_haut()
+        return list
 
     def quatre_positions_sauts(self):
         """Retourne une liste contenant les quatre "sauts" diagonaux à partir de la position actuelle. Les positions
@@ -100,12 +102,17 @@ if __name__ == '__main__':
     print('Test unitaires de la classe "Position"...')
 
     pos = Position(3, 4)
+    pos_test = Position(5,4)
     assert pos.ligne == 3
     assert pos.colonne == 4
 
     assert pos.positions_diagonales_bas() == [Position(4, 3), Position(4, 5)]
+    assert pos_test.positions_diagonales_bas() == [Position(6, 3), Position(6, 5)]
     assert pos.positions_diagonales_haut() == [Position(2, 3), Position(2, 5)]
+    assert pos_test.positions_diagonales_haut() == [Position(4, 3), Position(4, 5)]
     assert pos.quatre_positions_diagonales() == [Position(4, 3), Position(4, 5), Position(2, 3), Position(2, 5)]
+    assert pos_test.quatre_positions_diagonales() == [Position(6, 3), Position(6, 5), Position(4, 3), Position(4, 5)]
     assert pos.quatre_positions_sauts() == [Position(5, 2), Position(5, 6), Position(1, 2), Position(1, 6)]
+    assert pos_test.quatre_positions_sauts() == [Position(7, 2), Position(7, 6), Position(3, 2), Position(3, 6)]
 
     print('Test unitaires passés avec succès!')
