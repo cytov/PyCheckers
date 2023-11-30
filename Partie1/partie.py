@@ -195,6 +195,7 @@ class Partie:
 
         self.position_source_selectionnee = None
         self.position_source_forcee = None
+        self.doit_prendre = False
         # TODO: À compléter
 
     def jouer(self):
