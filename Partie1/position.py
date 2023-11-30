@@ -59,8 +59,7 @@ class Position:
 
         """
 
-        list = self.positions_diagonales_bas() + self.positions_diagonales_haut()
-        return list
+        return self.positions_diagonales_bas() + self.positions_diagonales_haut()
 
     def quatre_positions_sauts(self):
         """Retourne une liste contenant les quatre "sauts" diagonaux à partir de la position actuelle. Les positions

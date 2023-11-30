@@ -263,14 +263,14 @@ class Damier:
             return "erreur"
 
     def check_promotion(self, position_source, position_cible):
-        """Vérifie si un déplacement d'un position source a une position cible nécessite une promotion ou pas.
+        """Vérifie si le déplacement d'une position_source a une position_cible nécessite une promotion ou pas.
 
         Args:
             position_source (Position): La position source du déplacement.
             position_cible (Position): La position cible du déplacement.
 
         Returns:
-            bool: True si le déplacement nécessite une promotion, False autrement.
+            bool: True si le déplacement résulte en une promotion, False autrement.
         """
         piece = self.recuperer_piece_a_position(position_source)
 
