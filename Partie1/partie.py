@@ -141,7 +141,48 @@ class Partie:
                 print("les valeurs entrees ne sont pas valides")
 
         return pos_source, pos_cible
-        #TODO: À compléter
+
+    def demander_positions_deplacement(self):
+        """Demande à l'utilisateur les positions sources et cible, et valide ces positions. Cette méthode doit demander
+        les positions à l'utilisateur tant que celles-ci sont invalides.
+
+        Cette méthode ne doit jamais planter, peu importe ce que l'utilisateur entre.
+
+        Returns:
+            Position, Position: Un couple de deux positions (source et cible).
+
+        """
+        pos_source = Position(-1, -1)
+        pos_cible = Position(-1, -1)
+
+        while not self.position_source_valide(pos_source)[0]:
+            # x, y = input("Entrez une position du depart (deux valeurs separees par un espace)").split()
+            # this approach caused issues when the user entered a different format than the one wanted.
+
+            x = input("Entrez la ligne du depart: ")
+            y = input("Entrez la colonne du depart: ")
+
+            if x.isdigit() and y.isdigit():
+                pos_source = Position(int(x), int(y))
+                print(self.position_source_valide(pos_source)[1])
+
+            else:
+                print("les valeurs entrees ne sont pas valides")
+        self.position_source_selectionnee = pos_source
+
+        while not self.position_cible_valide(pos_cible)[0]:
+            # x, y = input("Entrez une position cible (deux valeurs separees par un espace)").split()
+            x = input("Entrez la ligne cible: ")
+            y = input("Entrez la colonne cible: ")
+
+            if x.isdigit() and y.isdigit():
+                pos_cible = Position(int(x), int(y))
+                print(self.position_cible_valide(pos_cible)[1])
+
+            else:
+                print("les valeurs entrees ne sont pas valides")
+
+        return pos_source, pos_cible
 
     def tour(self):
         """Cette méthode effectue le tour d'un joueur, et doit effectuer les actions suivantes:

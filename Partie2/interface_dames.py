@@ -17,6 +17,9 @@ class FenetrePartie(Tk):
         msg_couleur (Label): Affiche la couleur du joueur qui doit faire un déplacement
         msg_deplacement (Label): Affiche si le jeton sélectionné peut se déplacer
         bouton_quitter (Button): Bouton permettant de quitter la partie
+        bouton_nouvelle_partie (Button) : Bouton permettant de faire une nouvelle partie
+        pos_source_selectionnee (Position) : Position de depart selectionnee
+        damier (Damier) : Le damier du jeu
         TODO: AJOUTER VOS PROPRES ATTRIBUTS ICI!
     """
 
@@ -62,9 +65,15 @@ class FenetrePartie(Tk):
         self.bouton_nouvelle_partie = Button(self, text="Nouvelle partie", command=self.nouvelle_partie)
         self.bouton_nouvelle_partie.grid(row=0, column=2, sticky='ne')
 
+        # Ajout d'une variable de classe pour stocker la position source
+        self.pos_source_selectionnee = None
+
         # Truc pour le redimensionnement automatique des éléments de la fenêtre.
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
+
+        # Ajouter du damier
+        self.damier = Damier()
 
     def selectionner(self, event):
         """Méthode qui gère le clic de souris sur le damier.
@@ -84,37 +93,63 @@ class FenetrePartie(Tk):
             # On récupère l'information sur la pièce à l'endroit choisi.
             piece = self.partie.damier.recuperer_piece_a_position(position)
 
-            if piece is None:
+            if piece is not None:
+                    if piece.couleur != self.partie.couleur_joueur_courant:
+                        if self.pos_source_selectionnee is None:
+                            self.messages['foreground'] = 'red'
+                            self.messages['text'] = "Veuillez sélectionnez une pièce de la bonne couleur."
+                    if piece.couleur == self.partie.couleur_joueur_courant:
+                        self.pos_source_selectionnee = position
+                        self.messages['foreground'] = 'black'
+                        self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
+                    if self.pos_source_selectionnee is not None:
+                        ligne = event.y // self.canvas_damier.n_pixels_par_case
+                        colonne = event.x // self.canvas_damier.n_pixels_par_case
+                        position = Position(ligne, colonne)
+                        self.pos_source_selectionnee = position
+                        self.messages['foreground'] = 'black'
+                        self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
+            elif piece is None:
                 self.messages['foreground'] = 'red'
-                self.messages['text'] = 'Erreur: Aucune pièce à cet endroit.'
-            else:
-                self.messages['foreground'] = 'black'
-                self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format( position)
-        #         self.piece_peut_etre_deplacee()
-        #
-        #         if position is not None:
-        #             self.piece_peut_etre_deplacee()
-        #
-        #         return position
-        #
-        # return None
+                self.messages['text'] = "Veuillez sélectionnez une pièce qui peut se déplacer."
 
-    # def piece_peut_etre_deplacee(self):
-    #
-    #     """ Méthode permettant de savoir si la piece sélectionnée peut être déplacée
-    #
-    #     Args :
-    #
-    #     """
-    #     position_piece = self.selectionner(None)
-    #     deplacement = self.partie.damier.piece_peut_se_deplacer(position_piece)
-    #
-    #     if deplacement:
-    #         self.msg_deplacement['foreground'] = 'black'
-    #         self.msg_deplacement['text'] = 'La pièce peut se déplacer'
-    #     else:
-    #         self.msg_deplacement['foreground'] = 'red'
-    #         self.msg_deplacement['text'] = 'La pièce ne peut pas se déplacer'
+
+    def demander_positions_deplacement_clic(self):
+        """L'utilisateur indique les positions sources et cible, et valide ces positions. Cette méthode doit demander
+        les positions à l'utilisateur tant que celles-ci sont invalides.
+
+        Cette méthode ne doit jamais planter, peu importe ce que l'utilisateur entre.
+
+        Returns:
+            Position, Position: Un couple de deux positions (source et cible).
+
+        """
+        position_source = Position(-1, -1)
+        position_cible = Position(-1, -1)
+
+        while not self.position_source_valide(position_source)[0]:
+            # x, y = Coordonnees du clic
+
+            if x.isdigit() and y.isdigit():
+                position_source = Position(int(x), int(y))
+                print(self.position_source_valide(position_source)[1])
+            else:
+                print("les valeurs entrees ne sont pas valides")
+
+        while not self.position_cible_valide(position_cible)[0]:
+            # x, y = Coordonnees du deuxieme clic
+
+            if x.isdigit() and y.isdigit():
+                position_cible = Position(int(x), int(y))
+                print(self.position_cible_valide(position_cible)[1])
+            else:
+                print("les valeurs entrees ne sont pas valides")
+
+        return position_source, position_cible
+        # self.effectuer_deplacement(self, position_source, position_cible)
+
+    def effectuer_deplacement(self, pos_source, pos_cible):
+        self.partie.damier.deplacer(pos_source, pos_cible)
 
     def nouvelle_partie(self):
         """ Méthode pour lancer une nouvelle partie. """
