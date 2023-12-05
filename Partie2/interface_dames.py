@@ -68,6 +68,9 @@ class FenetrePartie(Tk):
         # Ajout d'une variable de classe pour stocker la position source
         self.pos_source_selectionnee = None
 
+        # Ajout d'une variable de classe pour stocker la position cible
+        self.pos_cible_selectionnee = None
+
         # Truc pour le redimensionnement automatique des éléments de la fenêtre.
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -83,36 +86,64 @@ class FenetrePartie(Tk):
 
         """
 
-        if event is not None:
+        # if event is not None:
+        #     # On trouve le numéro de ligne/colonne en divisant les positions en y/x par le nombre de pixels par case.
+        #     ligne = event.y // self.canvas_damier.n_pixels_par_case
+        #     colonne = event.x // self.canvas_damier.n_pixels_par_case
+        #     position = Position(ligne, colonne)
+        #
+        #     # On récupère l'information sur la pièce à l'endroit choisi.
+        #     piece = self.partie.damier.recuperer_piece_a_position(position)
+        #
+        # if self.pos_source_selectionnee is None:
+        #     if piece is not None:
+        #         if piece.couleur != self.partie.couleur_joueur_courant:
+        #             if self.pos_source_selectionnee is None:
+        #                 self.messages['foreground'] = 'red'
+        #                 self.messages['text'] = "Veuillez sélectionner une pièce de la bonne couleur."
+        #         elif piece.couleur == self.partie.couleur_joueur_courant:
+        #             self.pos_source_selectionnee = position
+        #             self.messages['foreground'] = 'black'
+        #             self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
+        #         elif self.pos_source_selectionnee is not None:
+        #             ligne = event.y // self.canvas_damier.n_pixels_par_case
+        #             colonne = event.x // self.canvas_damier.n_pixels_par_case
+        #             position = Position(ligne, colonne)
+        #             self.pos_source_selectionnee = position
+        #             self.messages['foreground'] = 'black'
+        #             self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
+        #     else:
+        #         self.messages['foreground'] = 'red'
+        #         self.messages['text'] = "Veuillez sélectionner une pièce qui peut se déplacer."
 
-            # On trouve le numéro de ligne/colonne en divisant les positions en y/x par le nombre de pixels par case.
-            ligne = event.y // self.canvas_damier.n_pixels_par_case
-            colonne = event.x // self.canvas_damier.n_pixels_par_case
-            position = Position(ligne, colonne)
+        # On trouve le numéro de ligne/colonne en divisant les positions en y/x par le nombre de pixels par case.
+        ligne = event.y // self.canvas_damier.n_pixels_par_case
+        colonne = event.x // self.canvas_damier.n_pixels_par_case
+        position = Position(ligne, colonne)
 
-            # On récupère l'information sur la pièce à l'endroit choisi.
-            piece = self.partie.damier.recuperer_piece_a_position(position)
+        # On récupère l'information sur la pièce à l'endroit choisi.
+        piece = self.partie.damier.recuperer_piece_a_position(position)
 
-            if piece is not None:
-                    if piece.couleur != self.partie.couleur_joueur_courant:
-                        if self.pos_source_selectionnee is None:
-                            self.messages['foreground'] = 'red'
-                            self.messages['text'] = "Veuillez sélectionnez une pièce de la bonne couleur."
-                    if piece.couleur == self.partie.couleur_joueur_courant:
-                        self.pos_source_selectionnee = position
-                        self.messages['foreground'] = 'black'
-                        self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
-                    if self.pos_source_selectionnee is not None:
-                        ligne = event.y // self.canvas_damier.n_pixels_par_case
-                        colonne = event.x // self.canvas_damier.n_pixels_par_case
-                        position = Position(ligne, colonne)
-                        self.pos_source_selectionnee = position
-                        self.messages['foreground'] = 'black'
-                        self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
-            elif piece is None:
+        if self.pos_source_selectionnee is None:
+            if piece is None:
                 self.messages['foreground'] = 'red'
-                self.messages['text'] = "Veuillez sélectionnez une pièce qui peut se déplacer."
+                self.messages['text'] = 'Erreur: Aucune pièce à cet endroit.'
+            else:
+                if piece.couleur != self.partie.couleur_joueur_courant:
+                    self.messages['foreground'] = 'red'
+                    self.messages['text'] = "Veuillez sélectionner une pièce de la bonne couleur."
+                else:
+                    self.messages['foreground'] = 'black'
+                    self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
 
+    def selection_position_source(self):
+        self.selectionner(self, event)
+        return self.pos_source_selectionnee
+
+    def selection_position_source(self):
+        if self.pos_source_selectionnee is not None:
+            if piece is None:
+                return self.pos_cible_selectionnee
 
     def demander_positions_deplacement_clic(self):
         """L'utilisateur indique les positions sources et cible, et valide ces positions. Cette méthode doit demander
