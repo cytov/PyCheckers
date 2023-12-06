@@ -15,7 +15,8 @@ class FenetrePartie(Tk):
         canvas_damier (CanvasDamier): Le «widget» gérant l'affichage du damier à l'écran
         messages (Label): Un «widget» affichant des messages textes à l'utilisateur du programme
         msg_couleur (Label): Affiche la couleur du joueur qui doit faire un déplacement
-        msg_deplacement (Label): Affiche si le jeton sélectionné peut se déplacer
+        msg_pos_source (Label): Affiche valeur de pos_source_selectionnee
+        msg_pos_cible (Label): Affiche valeur de pos_cible_selectionnee
         bouton_quitter (Button): Bouton permettant de quitter la partie
         bouton_nouvelle_partie (Button) : Bouton permettant de faire une nouvelle partie
         pos_source_selectionnee (Position) : Position de depart selectionnee
@@ -46,10 +47,6 @@ class FenetrePartie(Tk):
         # Nom de la fenêtre («title» est une méthode de la classe de base «Tk»)
         self.title("Jeu de dames")
 
-        # Affiche si la pièce sélectionnée peut se déplacer
-        self.msg_deplacement = Label(self)
-        self.msg_deplacement.grid
-
         # Affiche le nom du joueur qui joue actuellement
         self.msg_couleur = Label(self)
         self.msg_couleur.grid()
@@ -75,8 +72,16 @@ class FenetrePartie(Tk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        # Ajouter du damier
-        self.damier = Damier()
+        # Message pour voir la trace de la position source
+        self.msg_pos_source = Label(self)
+        self.msg_pos_source.grid()
+
+        # Message pour voir la trace de la position cible
+        self.msg_pos_cible = Label(self)
+        self.msg_pos_cible.grid()
+
+        # Lancement des positions
+        self.trace()
 
     def selectionner(self, event):
         """Méthode qui gère le clic de souris sur le damier.
@@ -86,37 +91,6 @@ class FenetrePartie(Tk):
 
         """
 
-        # if event is not None:
-        #     # On trouve le numéro de ligne/colonne en divisant les positions en y/x par le nombre de pixels par case.
-        #     ligne = event.y // self.canvas_damier.n_pixels_par_case
-        #     colonne = event.x // self.canvas_damier.n_pixels_par_case
-        #     position = Position(ligne, colonne)
-        #
-        #     # On récupère l'information sur la pièce à l'endroit choisi.
-        #     piece = self.partie.damier.recuperer_piece_a_position(position)
-        #
-        # if self.pos_source_selectionnee is None:
-        #     if piece is not None:
-        #         if piece.couleur != self.partie.couleur_joueur_courant:
-        #             if self.pos_source_selectionnee is None:
-        #                 self.messages['foreground'] = 'red'
-        #                 self.messages['text'] = "Veuillez sélectionner une pièce de la bonne couleur."
-        #         elif piece.couleur == self.partie.couleur_joueur_courant:
-        #             self.pos_source_selectionnee = position
-        #             self.messages['foreground'] = 'black'
-        #             self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
-        #         elif self.pos_source_selectionnee is not None:
-        #             ligne = event.y // self.canvas_damier.n_pixels_par_case
-        #             colonne = event.x // self.canvas_damier.n_pixels_par_case
-        #             position = Position(ligne, colonne)
-        #             self.pos_source_selectionnee = position
-        #             self.messages['foreground'] = 'black'
-        #             self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
-        #     else:
-        #         self.messages['foreground'] = 'red'
-        #         self.messages['text'] = "Veuillez sélectionner une pièce qui peut se déplacer."
-
-        # On trouve le numéro de ligne/colonne en divisant les positions en y/x par le nombre de pixels par case.
         ligne = event.y // self.canvas_damier.n_pixels_par_case
         colonne = event.x // self.canvas_damier.n_pixels_par_case
         position = Position(ligne, colonne)
@@ -128,65 +102,44 @@ class FenetrePartie(Tk):
             if piece is None:
                 self.messages['foreground'] = 'red'
                 self.messages['text'] = 'Erreur: Aucune pièce à cet endroit.'
+            elif piece.couleur != self.partie.couleur_joueur_courant:
+                self.messages['foreground'] = 'red'
+                self.messages['text'] = "Veuillez sélectionner une pièce de la bonne couleur."
             else:
-                if piece.couleur != self.partie.couleur_joueur_courant:
-                    self.messages['foreground'] = 'red'
-                    self.messages['text'] = "Veuillez sélectionner une pièce de la bonne couleur."
-                else:
-                    self.messages['foreground'] = 'black'
-                    self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
-
-    def selection_position_source(self):
-        self.selectionner(self, event)
-        return self.pos_source_selectionnee
-
-    def selection_position_source(self):
-        if self.pos_source_selectionnee is not None:
-            if piece is None:
-                return self.pos_cible_selectionnee
-
-    def demander_positions_deplacement_clic(self):
-        """L'utilisateur indique les positions sources et cible, et valide ces positions. Cette méthode doit demander
-        les positions à l'utilisateur tant que celles-ci sont invalides.
-
-        Cette méthode ne doit jamais planter, peu importe ce que l'utilisateur entre.
-
-        Returns:
-            Position, Position: Un couple de deux positions (source et cible).
-
-        """
-        position_source = Position(-1, -1)
-        position_cible = Position(-1, -1)
-
-        while not self.position_source_valide(position_source)[0]:
-            # x, y = Coordonnees du clic
-
-            if x.isdigit() and y.isdigit():
-                position_source = Position(int(x), int(y))
-                print(self.position_source_valide(position_source)[1])
+                self.pos_source_selectionnee = position
+                self.messages['foreground'] = 'black'
+                self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
+                self.trace()
+        else:
+            if piece is not None and piece.couleur == self.partie.couleur_joueur_courant:
+                self.pos_source_selectionnee = position
+                self.messages['foreground'] = 'black'
+                self.messages['text'] = 'Position source sélectionnée à {}.'.format(position)
             else:
-                print("les valeurs entrees ne sont pas valides")
+                self.pos_cible_selectionnee = position
+                self.messages['foreground'] = 'black'
+                self.messages['text'] = 'Position cible sélectionnée à {}.'.format(position)
+                self.effectuer_deplacement(self.pos_source_selectionnee, self.pos_cible_selectionnee)
 
-        while not self.position_cible_valide(position_cible)[0]:
-            # x, y = Coordonnees du deuxieme clic
+        return self.pos_source_selectionnee, self.pos_cible_selectionnee
 
-            if x.isdigit() and y.isdigit():
-                position_cible = Position(int(x), int(y))
-                print(self.position_cible_valide(position_cible)[1])
-            else:
-                print("les valeurs entrees ne sont pas valides")
-
-        return position_source, position_cible
-        # self.effectuer_deplacement(self, position_source, position_cible)
 
     def effectuer_deplacement(self, pos_source, pos_cible):
         self.partie.damier.deplacer(pos_source, pos_cible)
+        self.canvas_damier.actualiser()
+        self.pos_source_selectionnee = None
+        self.pos_cible_selectionnee = None
+
 
     def nouvelle_partie(self):
         """ Méthode pour lancer une nouvelle partie. """
 
         self.partie = Partie()
+        self.canvas_damier.damier = self.partie.damier
+        self.canvas_damier.actualiser()
         self.messages['text'] = "Nouvelle partie commencée."
+        self.pos_source_selectionnee = None
+        self.pos_cible_selectionnee = None
         self.joueur_en_cours()
 
     def quitter_la_partie(self):
@@ -204,4 +157,10 @@ class FenetrePartie(Tk):
 
         # TODO: À continuer....
 
-
+    def trace(self):
+        source = self.pos_source_selectionnee
+        cible = self.pos_cible_selectionnee
+        self.msg_pos_source['foreground'] = 'black'
+        self.msg_pos_source['text'] = "Position source : {}".format(source)
+        self.msg_pos_cible['foreground'] = 'black'
+        self.msg_pos_cible['text'] = "Position cible : {}".format(cible)
