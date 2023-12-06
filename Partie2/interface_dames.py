@@ -54,6 +54,9 @@ class FenetrePartie(Tk):
         # Appel initial pour afficher la couleur du joueur
         self.joueur_en_cours()
 
+        # Appel initial pour savoir si la pièce doit prendre doit prendre
+        self.partie.doit_prendre = False
+
         # Affiche un bouton pour quitter la partie
         self.bouton_quitter = Button(self, text="Quitter la partie", command=self.quitter_la_partie)
         self.bouton_quitter.grid(row=0, column=1, sticky='ne')
@@ -89,6 +92,10 @@ class FenetrePartie(Tk):
         Args:
             event (tkinter.Event): Objet décrivant l'évènement qui a causé l'appel de la méthode.
 
+        Returns:
+            pos_source_selectionnee (int) : La position de la piece que l'on veut deplacer
+            pos_cible_selectionne (int) : La position vers laquelle on veut envoyer notre piece
+
         """
 
         ligne = event.y // self.canvas_damier.n_pixels_par_case
@@ -116,20 +123,43 @@ class FenetrePartie(Tk):
                 self.messages['foreground'] = 'black'
                 self.messages['text'] = 'Position source sélectionnée à {}.'.format(position)
             else:
-                self.pos_cible_selectionnee = position
-                self.messages['foreground'] = 'black'
-                self.messages['text'] = 'Position cible sélectionnée à {}.'.format(position)
-                self.effectuer_deplacement(self.pos_source_selectionnee, self.pos_cible_selectionnee)
+                if (self.pos_source_selectionnee is not None
+                        and position in self.pos_source_selectionnee.quatre_positions_diagonales()
+                        and self.partie.damier.piece_peut_se_deplacer_vers(self.pos_source_selectionnee, position)):
+                    self.pos_cible_selectionnee = position
+                    self.messages['foreground'] = 'black'
+                    self.messages['text'] = 'Position cible sélectionnée à {}.'.format(position)
+                    self.effectuer_deplacement(self.pos_source_selectionnee, self.pos_cible_selectionnee)
+                else:
+                    self.messages['foreground'] = 'red'
+                    self.messages['text'] = "Position cible non valide"
 
         return self.pos_source_selectionnee, self.pos_cible_selectionnee
 
 
     def effectuer_deplacement(self, pos_source, pos_cible):
+        """Méthode permettant de déplacer un jeton suite aux clics.
+
+        Args:
+            pos_source (position): La position de la pièce que l'on veut déplacer
+            pos_cible (position): La position vers laquelle on veut envoyer la pièce soit par déplacement soit en mangeant une autre pièce.
+
+        Returns:
+            str: "ok" si le déplacement a été effectué sans prise, "prise" si une pièce adverse a été prise, et
+                "erreur" autrement.
+
+        """
         self.partie.damier.deplacer(pos_source, pos_cible)
         self.canvas_damier.actualiser()
         self.pos_source_selectionnee = None
         self.pos_cible_selectionnee = None
 
+        if self.partie.couleur_joueur_courant == "blanc":
+            self.partie.couleur_joueur_courant = "noir"
+        else:
+            self.partie.couleur_joueur_courant = "blanc"
+
+        self.joueur_en_cours()
 
     def nouvelle_partie(self):
         """ Méthode pour lancer une nouvelle partie. """
@@ -143,11 +173,13 @@ class FenetrePartie(Tk):
         self.joueur_en_cours()
 
     def quitter_la_partie(self):
-        """ Méthode de quitter la fenêtre de la partie."""
+        """ Méthode permettant de quitter la fenêtre de la partie."""
         self.quit()
 
     def joueur_en_cours(self):
         """ Méthode permettant de savoir quel joueur a son tour actif et l'afficher sous forme de message
+
+        À appeler à chaque fois qu'on veut mettre à jour le message.
 
         """
 
@@ -155,9 +187,8 @@ class FenetrePartie(Tk):
         self.msg_couleur['foreground'] = 'black'
         self.msg_couleur['text'] = "C'est le tour du joueur {}".format(couleur)
 
-        # TODO: À continuer....
-
     def trace(self):
+        #Méthode temporaire
         source = self.pos_source_selectionnee
         cible = self.pos_cible_selectionnee
         self.msg_pos_source['foreground'] = 'black'
