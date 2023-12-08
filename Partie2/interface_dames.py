@@ -4,8 +4,6 @@ from tkinter import Tk, Label, NSEW, Button
 from Partie2.canvas_damier import CanvasDamier
 from Partie1.partie import Partie
 from Partie1.position import Position
-from Partie1.damier import Damier
-
 
 class FenetrePartie(Tk):
     """Interface graphique de la partie de dames.
@@ -47,6 +45,23 @@ class FenetrePartie(Tk):
         # Nom de la fenêtre («title» est une méthode de la classe de base «Tk»)
         self.title("Jeu de dames")
 
+        # Truc pour le redimensionnement automatique des éléments de la fenêtre.
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        # les Attributes ajoute par étudiant
+        self.position_cible_courante = None
+
+        self.position_cible_courante = None
+
+        # Affiche un message si le joueur doit prendre une pièce
+        self.msg_prendre = Label(self)
+        self.msg_prendre.grid()
+
+        # Affiche un message si le joueur faire un clic invalide
+        # self.msg_invalide = Label(self)
+        # self.msg_invalide.grid()
+
         # Affiche le nom du joueur qui joue actuellement
         self.msg_couleur = Label(self)
         self.msg_couleur.grid()
@@ -54,37 +69,20 @@ class FenetrePartie(Tk):
         # Appel initial pour afficher la couleur du joueur
         self.joueur_en_cours()
 
-        # Appel initial pour savoir si la pièce doit prendre doit prendre
-        self.partie.doit_prendre = False
-
         # Affiche un bouton pour quitter la partie
         self.bouton_quitter = Button(self, text="Quitter la partie", command=self.quitter_la_partie)
-        self.bouton_quitter.grid(row=0, column=1, sticky='ne')
+        self.bouton_quitter.grid(row=0, column=1, sticky='ne', padx=10, pady=10)
 
         # Affiche un bouton pour lancer une nouvelle partie
         self.bouton_nouvelle_partie = Button(self, text="Nouvelle partie", command=self.nouvelle_partie)
-        self.bouton_nouvelle_partie.grid(row=0, column=2, sticky='ne')
+        self.bouton_nouvelle_partie.grid(row=0, column=1, sticky='ne', padx=10, pady=40)
 
-        # Ajout d'une variable de classe pour stocker la position source
-        self.pos_source_selectionnee = None
+        # Initialisation de la fin de partie
+        self.partie_terminee()
 
-        # Ajout d'une variable de classe pour stocker la position cible
-        self.pos_cible_selectionnee = None
+        self.message_prendre()
 
-        # Truc pour le redimensionnement automatique des éléments de la fenêtre.
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
-
-        # Message pour voir la trace de la position source
-        self.msg_pos_source = Label(self)
-        self.msg_pos_source.grid()
-
-        # Message pour voir la trace de la position cible
-        self.msg_pos_cible = Label(self)
-        self.msg_pos_cible.grid()
-
-        # Lancement des positions
-        self.trace()
+        # self.message_invalide()
 
     def selectionner(self, event):
         """Méthode qui gère le clic de souris sur le damier.
@@ -102,64 +100,74 @@ class FenetrePartie(Tk):
         colonne = event.x // self.canvas_damier.n_pixels_par_case
         position = Position(ligne, colonne)
 
+        if self.canvas_damier.damier.piece_de_couleur_peut_faire_une_prise(self.partie.couleur_joueur_courant):
+            self.partie.doit_prendre = True
+
         # On récupère l'information sur la pièce à l'endroit choisi.
         piece = self.partie.damier.recuperer_piece_a_position(position)
 
-        if self.pos_source_selectionnee is None:
-            if piece is None:
+        if piece is None:
+            if self.partie.position_source_selectionnee is None:
                 self.messages['foreground'] = 'red'
                 self.messages['text'] = 'Erreur: Aucune pièce à cet endroit.'
-            elif piece.couleur != self.partie.couleur_joueur_courant:
-                self.messages['foreground'] = 'red'
-                self.messages['text'] = "Veuillez sélectionner une pièce de la bonne couleur."
+
             else:
-                self.pos_source_selectionnee = position
+                cible_valide, msg_erreur = self.partie.position_cible_valide(position)
+
+                if cible_valide:
+                    deplacement = self.canvas_damier.damier.deplacer(self.partie.position_source_selectionnee, position)
+
+                    if deplacement == "prise" and self.canvas_damier.damier.piece_peut_faire_une_prise(position):
+                        self.partie.doit_prendre = True
+                        self.partie.position_source_forcee = position
+                        self.partie.position_source_selectionnee = None
+                        self.messages['text'] = ''
+                        self.messages['foreground'] = 'black'
+                        self.canvas_damier.actualiser()
+
+                    else:
+                        self.canvas_damier.actualiser()
+                        self.change_joueur()
+                        self.reset_tour()
+
+                else:
+                    self.messages['text'] = msg_erreur
+                    self.messages['foreground'] = 'red'
+                    self.reset_tour()
+        else:
+            if self.partie.position_source_selectionnee is None or piece.couleur == self.partie.couleur_joueur_courant:
                 self.messages['foreground'] = 'black'
                 self.messages['text'] = 'Pièce sélectionnée à la position {}.'.format(position)
-                self.trace()
-        else:
-            if piece is not None and piece.couleur == self.partie.couleur_joueur_courant:
-                self.pos_source_selectionnee = position
-                self.messages['foreground'] = 'black'
-                self.messages['text'] = 'Position source sélectionnée à {}.'.format(position)
-            else:
-                if (self.pos_source_selectionnee is not None
-                        and position in self.pos_source_selectionnee.quatre_positions_diagonales()
-                        and self.partie.damier.piece_peut_se_deplacer_vers(self.pos_source_selectionnee, position)):
-                    self.pos_cible_selectionnee = position
-                    self.messages['foreground'] = 'black'
-                    self.messages['text'] = 'Position cible sélectionnée à {}.'.format(position)
-                    self.effectuer_deplacement(self.pos_source_selectionnee, self.pos_cible_selectionnee)
+
+                source_valide, msg_erreur = self.partie.position_source_valide(position)
+
+                if source_valide:
+                    self.partie.position_source_selectionnee = position
                 else:
+                    self.messages['text'] = msg_erreur
                     self.messages['foreground'] = 'red'
-                    self.messages['text'] = "Position cible non valide"
 
-        return self.pos_source_selectionnee, self.pos_cible_selectionnee
+        # print("self.partie.doit_prendre:", self.partie.doit_prendre)
+        # print("self.partie.position_source_forcee:", self.partie.position_source_forcee)
+        # print("self.partie.position_source_selectionnee:", self.partie.position_source_selectionnee)
 
+        self.joueur_en_cours()
+        self.message_prendre()
 
-    def effectuer_deplacement(self, pos_source, pos_cible):
-        """Méthode permettant de déplacer un jeton suite aux clics.
+        # self.message_invalide()
 
-        Args:
-            pos_source (position): La position de la pièce que l'on veut déplacer
-            pos_cible (position): La position vers laquelle on veut envoyer la pièce soit par déplacement soit en mangeant une autre pièce.
+    def reset_tour(self):
+        self.partie.position_source_selectionnee = None
+        self.messages['text'] = ''
+        self.messages['foreground'] = 'black'
+        self.partie.doit_prendre = False
+        self.partie.position_source_forcee = None
 
-        Returns:
-            str: "ok" si le déplacement a été effectué sans prise, "prise" si une pièce adverse a été prise, et
-                "erreur" autrement.
-
-        """
-        self.partie.damier.deplacer(pos_source, pos_cible)
-        self.canvas_damier.actualiser()
-        self.pos_source_selectionnee = None
-        self.pos_cible_selectionnee = None
-
+    def change_joueur(self):
         if self.partie.couleur_joueur_courant == "blanc":
             self.partie.couleur_joueur_courant = "noir"
         else:
             self.partie.couleur_joueur_courant = "blanc"
-
-        self.joueur_en_cours()
 
     def nouvelle_partie(self):
         """ Méthode pour lancer une nouvelle partie. """
@@ -168,8 +176,8 @@ class FenetrePartie(Tk):
         self.canvas_damier.damier = self.partie.damier
         self.canvas_damier.actualiser()
         self.messages['text'] = "Nouvelle partie commencée."
-        self.pos_source_selectionnee = None
-        self.pos_cible_selectionnee = None
+        self.partie.position_source_selectionnee = None
+        self.position_cible_courante = None
         self.joueur_en_cours()
 
     def quitter_la_partie(self):
@@ -187,11 +195,34 @@ class FenetrePartie(Tk):
         self.msg_couleur['foreground'] = 'black'
         self.msg_couleur['text'] = "C'est le tour du joueur {}".format(couleur)
 
-    def trace(self):
-        #Méthode temporaire
-        source = self.pos_source_selectionnee
-        cible = self.pos_cible_selectionnee
-        self.msg_pos_source['foreground'] = 'black'
-        self.msg_pos_source['text'] = "Position source : {}".format(source)
-        self.msg_pos_cible['foreground'] = 'black'
-        self.msg_pos_cible['text'] = "Position cible : {}".format(cible)
+    def partie_terminee(self):
+
+        if not self.partie.damier.piece_de_couleur_peut_se_deplacer(self.partie.couleur_joueur_courant) and \
+                not self.partie.damier.piece_de_couleur_peut_faire_une_prise(self.partie.couleur_joueur_courant):
+
+            if self.partie.couleur_joueur_courant == "blanc":
+                gagnant = "noir"
+            else :
+                gagnant = "blanc"
+
+            messagebox.showinfo("Fin de partie", f"Le joueur {gagnant} a gagné!")
+            self.quitter_la_partie()
+
+        else:
+            self.after(100, self.partie_terminee)
+
+    def message_prendre(self):
+
+        if self.partie.doit_prendre == True:
+            self.msg_prendre['foreground'] = 'black'
+            self.msg_prendre['text'] = f"Le joueur doit prendre une pièce."
+        else :
+            self.msg_prendre['foreground'] = 'black'
+            self.msg_prendre['text'] = ''
+
+    # def message_invalide(self):
+    #
+    #     if self.partie.doit_prendre and self.partie.position_source_forcee is not None:
+    #         if self.partie.position_source_selectionnee != self.partie.position_source_forcee:
+    #             self.msg_invalide['foreground'] = 'red'
+    #             self.msg_invalide['text'] = 'Vous pouvez prendre une pièce avec une autre pièce.'
