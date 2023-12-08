@@ -79,10 +79,7 @@ class Damier:
 
         """
         # On utilise n_lignes et n_colonnes a la place de "8" pour pouvoir changer n dans le futur si on le veut.
-        if position.ligne in range(self.n_lignes) and position.colonne in range(self.n_colonnes):
-            return True
-        else:
-            return False
+        return position.ligne in range(self.n_lignes) and position.colonne in range(self.n_colonnes)
 
     def piece_peut_se_deplacer_vers(self, position_piece, position_cible):
         """Cette méthode détermine si une pièce (à la position reçue) peut se déplacer à une certaine position cible.
@@ -135,13 +132,13 @@ class Damier:
         """
         piece = self.recuperer_piece_a_position(position_piece)
         position_milieu_saut = Position((position_piece.ligne + position_cible.ligne) // 2, (position_piece.colonne + position_cible.colonne) // 2)
-        piece_cible = self.recuperer_piece_a_position(position_milieu_saut)
+        piece_mange = self.recuperer_piece_a_position(position_milieu_saut)
 
         if (piece is None) or (self.recuperer_piece_a_position(position_cible) is not None) or (not self.position_est_dans_damier(position_cible)):
             return False
         elif position_cible not in position_piece.quatre_positions_sauts():
             return False
-        elif (piece_cible is None) or (piece_cible.couleur == piece.couleur):
+        elif (piece_mange is None) or (piece_mange.couleur == piece.couleur):
             return False
         else:
             return True
@@ -179,9 +176,8 @@ class Damier:
 
         """
         for position in position_piece.quatre_positions_sauts():
-            if self.position_est_dans_damier(position):
-                if self.piece_peut_sauter_vers(position_piece, position):
-                    return True
+            if self.piece_peut_sauter_vers(position_piece, position):
+                return True
         return False
 
     def piece_de_couleur_peut_se_deplacer(self, couleur):
@@ -217,8 +213,7 @@ class Damier:
         """
         for key in self.cases.keys():
             if self.cases[key].couleur == couleur:
-                position_piece = key
-                if self.piece_peut_faire_une_prise(position_piece):
+                if self.piece_peut_faire_une_prise(key):
                     return True
         return False
 
@@ -263,16 +258,16 @@ class Damier:
             return "erreur"
 
     def check_promotion(self, position_source, position_cible):
-        """Vérifie si le déplacement d'une position_source a une position_cible nécessite une promotion ou pas.
+        """Vérifie si un déplacement d'un position source a une position cible nécessite une promotion ou pas.
 
         Args:
             position_source (Position): La position source du déplacement.
             position_cible (Position): La position cible du déplacement.
 
         Returns:
-            bool: True si le déplacement résulte en une promotion, False autrement.
+            bool: True si le déplacement nécessite une promotion, False autrement.
         """
-        piece = self.recuperer_piece_a_position(position_source)
+        piece = self.recuperer_piece_a_position(position_cible)
 
         if position_cible.ligne in [0, 7]:
             return piece.est_pion() and ((piece.est_blanche() and position_cible.ligne == 0) or (piece.est_noire() and position_cible.ligne == 7))
@@ -343,6 +338,8 @@ if __name__ == "__main__":
     assert un_damier.piece_peut_faire_une_prise((Position(0,5))) == False
     assert un_damier.deplacer(Position(5,0), Position(4,1)) == "ok"
     assert un_damier.deplacer(position_2_test, Position(6,5)) == "erreur"
+
+    # TODO: À compléter
 
     print('Test unitaires passés avec succès!')
 

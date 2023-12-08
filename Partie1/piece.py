@@ -1,6 +1,5 @@
 # Auteurs: Équipe IFT-1004
 
-
 class Piece:
     """Une pièce d'un jeu de dames.
 

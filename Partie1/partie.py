@@ -56,8 +56,20 @@ class Partie:
                  deuxième élément est un message d'erreur (ou une chaîne vide s'il n'y a pas d'erreur).
 
         """
-
         piece = self.damier.recuperer_piece_a_position(position_source)
+
+        # print("testing in position_source_valide() ------------------")
+        #
+        # print("piece", piece)
+        # print("position source valide pour:", position_source)
+        # print("position source forcee:", self.position_source_forcee)
+        # print("doit prendre: ", self.doit_prendre)
+        # print("piece couleur: ", piece.couleur)
+        # print("joueur couleur: ", self.couleur_joueur_courant)
+        # print("piece source peut faire une prise: ", self.damier.piece_peut_faire_une_prise(position_source))
+        # print("piece source peut se deplacer: ", self.damier.piece_peut_se_deplacer(position_source))
+        #
+        # print("end ------------------")
 
         if piece is None:
             return False, "La position sélectionnée ne contient pas une pièce."
@@ -68,14 +80,16 @@ class Partie:
         elif self.doit_prendre:
             if self.position_source_forcee is not None:
                 if position_source != self.position_source_forcee:
-                    return False, f"le joueur doit prendre avec la pièce en position {self.position_source_forcee}"
+                    return False, f"Le joueur doit prendre avec la pièce en position: {self.position_source_forcee}"
+                else:
+                    return True, ''
             elif not self.damier.piece_peut_faire_une_prise(position_source):
                 return False, "Une prise est possible, le joueur doit choisir une position avec une prise"
             else:
                 return True, ''
 
         elif not (self.damier.piece_peut_se_deplacer(position_source) or self.damier.piece_peut_faire_une_prise(position_source)):
-            return False, "la piece sélectionnée n'a pas de mouvements possible"
+            return False, "La piece sélectionnée n'a pas de mouvements possible"
 
         else:
             return True, ''
@@ -92,6 +106,7 @@ class Partie:
                 a pas d'erreur).
 
         """
+
         if self.doit_prendre and not self.damier.piece_peut_sauter_vers(self.position_source_selectionnee, position_cible):
             return False, "Joueur doit prendre"
         elif not (self.damier.piece_peut_se_deplacer_vers(self.position_source_selectionnee, position_cible) or self.damier.piece_peut_sauter_vers(self.position_source_selectionnee, position_cible)):
@@ -141,48 +156,7 @@ class Partie:
                 print("les valeurs entrees ne sont pas valides")
 
         return pos_source, pos_cible
-
-    def demander_positions_deplacement(self):
-        """Demande à l'utilisateur les positions sources et cible, et valide ces positions. Cette méthode doit demander
-        les positions à l'utilisateur tant que celles-ci sont invalides.
-
-        Cette méthode ne doit jamais planter, peu importe ce que l'utilisateur entre.
-
-        Returns:
-            Position, Position: Un couple de deux positions (source et cible).
-
-        """
-        pos_source = Position(-1, -1)
-        pos_cible = Position(-1, -1)
-
-        while not self.position_source_valide(pos_source)[0]:
-            # x, y = input("Entrez une position du depart (deux valeurs separees par un espace)").split()
-            # this approach caused issues when the user entered a different format than the one wanted.
-
-            x = input("Entrez la ligne du depart: ")
-            y = input("Entrez la colonne du depart: ")
-
-            if x.isdigit() and y.isdigit():
-                pos_source = Position(int(x), int(y))
-                print(self.position_source_valide(pos_source)[1])
-
-            else:
-                print("les valeurs entrees ne sont pas valides")
-        self.position_source_selectionnee = pos_source
-
-        while not self.position_cible_valide(pos_cible)[0]:
-            # x, y = input("Entrez une position cible (deux valeurs separees par un espace)").split()
-            x = input("Entrez la ligne cible: ")
-            y = input("Entrez la colonne cible: ")
-
-            if x.isdigit() and y.isdigit():
-                pos_cible = Position(int(x), int(y))
-                print(self.position_cible_valide(pos_cible)[1])
-
-            else:
-                print("les valeurs entrees ne sont pas valides")
-
-        return pos_source, pos_cible
+        #TODO: À compléter
 
     def tour(self):
         """Cette méthode effectue le tour d'un joueur, et doit effectuer les actions suivantes:
@@ -255,5 +229,3 @@ class Partie:
             return "noir"
         else:
             return "blanc"
-
-

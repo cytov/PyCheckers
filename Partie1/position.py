@@ -1,6 +1,5 @@
 # Auteurs: À compléter
 
-
 class Position:
     """Une position à deux coordonnées: ligne et colonne. La convention utilisée est celle de la notation matricielle :
     le coin supérieur gauche d'une matrice est dénoté (0, 0) (ligne 0 et colonne 0). On additionne une unité de colonne
@@ -58,7 +57,6 @@ class Position:
             list: La liste des quatre positions.
 
         """
-
         return self.positions_diagonales_bas() + self.positions_diagonales_haut()
 
     def quatre_positions_sauts(self):

@@ -1,6 +1,6 @@
 # Auteurs: À compléter
 
-from tkinter import Tk, Label, NSEW, Button
+from tkinter import Tk, Label, NSEW, Button, messagebox
 from Partie2.canvas_damier import CanvasDamier
 from Partie1.partie import Partie
 from Partie1.position import Position
@@ -80,9 +80,9 @@ class FenetrePartie(Tk):
         # Initialisation de la fin de partie
         self.partie_terminee()
 
+        # Initialisation du message_prendre
         self.message_prendre()
 
-        # self.message_invalide()
 
     def selectionner(self, event):
         """Méthode qui gère le clic de souris sur le damier.
@@ -147,14 +147,10 @@ class FenetrePartie(Tk):
                     self.messages['text'] = msg_erreur
                     self.messages['foreground'] = 'red'
 
-        # print("self.partie.doit_prendre:", self.partie.doit_prendre)
-        # print("self.partie.position_source_forcee:", self.partie.position_source_forcee)
-        # print("self.partie.position_source_selectionnee:", self.partie.position_source_selectionnee)
 
         self.joueur_en_cours()
         self.message_prendre()
 
-        # self.message_invalide()
 
     def reset_tour(self):
         self.partie.position_source_selectionnee = None
@@ -220,9 +216,4 @@ class FenetrePartie(Tk):
             self.msg_prendre['foreground'] = 'black'
             self.msg_prendre['text'] = ''
 
-    # def message_invalide(self):
-    #
-    #     if self.partie.doit_prendre and self.partie.position_source_forcee is not None:
-    #         if self.partie.position_source_selectionnee != self.partie.position_source_forcee:
-    #             self.msg_invalide['foreground'] = 'red'
-    #             self.msg_invalide['text'] = 'Vous pouvez prendre une pièce avec une autre pièce.'
+
