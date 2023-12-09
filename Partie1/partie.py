@@ -1,4 +1,4 @@
-# Auteurs: À compléter
+# Auteurs: Ismail Arbaoui et Luc-Olivier Toupin (Équipe 44 - IFT-1004)
 
 from Partie1.damier import Damier
 from Partie1.position import Position
@@ -93,7 +93,6 @@ class Partie:
 
         else:
             return True, ''
-        #TODO: À compléter
 
     def position_cible_valide(self, position_cible):
         """Vérifie si la position cible est valide (en fonction de la position source sélectionnée). Doit non seulement
@@ -113,7 +112,7 @@ class Partie:
             return False, "Déplacement impossible"
         else:
             return True, ''
-        #TODO: À compléter
+
 
     def demander_positions_deplacement(self):
         """Demande à l'utilisateur les positions sources et cible, et valide ces positions. Cette méthode doit demander
@@ -156,7 +155,7 @@ class Partie:
                 print("les valeurs entrees ne sont pas valides")
 
         return pos_source, pos_cible
-        #TODO: À compléter
+
 
     def tour(self):
         """Cette méthode effectue le tour d'un joueur, et doit effectuer les actions suivantes:
@@ -190,7 +189,7 @@ class Partie:
 
         # Demander les positions
         pos_source, pos_cible = self.demander_positions_deplacement()
-        # TODO: À compléter
+
 
         # Effectuer le déplacement (à l'aide de la méthode du damier appropriée)
         deplacement = self.damier.deplacer(pos_source, pos_cible)
@@ -198,7 +197,7 @@ class Partie:
             self.doit_prendre = True
             self.position_source_forcee = pos_cible
             return None
-        # TODO: À compléter
+
 
         # Mettre à jour les attributs de la classe
         self.position_source_selectionnee = None
@@ -211,7 +210,7 @@ class Partie:
         self.position_source_selectionnee = None
         self.position_source_forcee = None
         self.doit_prendre = False
-        # TODO: À compléter
+
 
     def jouer(self):
         """Démarre une partie. Tant que le joueur courant a des déplacements possibles (utilisez les méthodes

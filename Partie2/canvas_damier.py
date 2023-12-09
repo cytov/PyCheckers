@@ -1,4 +1,4 @@
-# Auteurs: Équipe IFT-1004
+# Auteurs: Ismail Arbaoui et Luc-Olivier Toupin (Équipe 44 - IFT-1004)
 
 from tkinter import Tk, Canvas
 from Partie1.position import Position

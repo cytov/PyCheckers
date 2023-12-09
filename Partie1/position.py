@@ -1,4 +1,4 @@
-# Auteurs: À compléter
+# Auteurs: Ismail Arbaoui et Luc-Olivier Toupin (Équipe 44 - IFT-1004)
 
 class Position:
     """Une position à deux coordonnées: ligne et colonne. La convention utilisée est celle de la notation matricielle :

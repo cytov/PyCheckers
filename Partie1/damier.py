@@ -1,4 +1,4 @@
-# Auteurs: À compléter
+# Auteurs: Ismail Arbaoui et Luc-Olivier Toupin (Équipe 44 - IFT-1004)
 
 from Partie1.piece import Piece
 from Partie1.position import Position
@@ -324,7 +324,6 @@ if __name__ == "__main__":
     }
     position_1_test = Position(5,4)
     position_2_test = Position(8,5)
-    # TODO: À compléter
 
     assert un_damier.position_est_dans_damier(position_1_test) == True
     assert un_damier.position_est_dans_damier(position_2_test) == False
@@ -338,8 +337,6 @@ if __name__ == "__main__":
     assert un_damier.piece_peut_faire_une_prise((Position(0,5))) == False
     assert un_damier.deplacer(Position(5,0), Position(4,1)) == "ok"
     assert un_damier.deplacer(position_2_test, Position(6,5)) == "erreur"
-
-    # TODO: À compléter
 
     print('Test unitaires passés avec succès!')
 

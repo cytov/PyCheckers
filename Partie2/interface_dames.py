@@ -1,4 +1,4 @@
-# Auteurs: À compléter
+# Auteurs: Ismail Arbaoui et Luc-Olivier Toupin (Équipe 44 - IFT-1004)
 
 from tkinter import Tk, Label, NSEW, Button, messagebox
 from Partie2.canvas_damier import CanvasDamier
@@ -13,13 +13,11 @@ class FenetrePartie(Tk):
         canvas_damier (CanvasDamier): Le «widget» gérant l'affichage du damier à l'écran
         messages (Label): Un «widget» affichant des messages textes à l'utilisateur du programme
         msg_couleur (Label): Affiche la couleur du joueur qui doit faire un déplacement
-        msg_pos_source (Label): Affiche valeur de pos_source_selectionnee
-        msg_pos_cible (Label): Affiche valeur de pos_cible_selectionnee
+        msg_prendre (Label): Affiche si un joueur peut faire une prise ou non
         bouton_quitter (Button): Bouton permettant de quitter la partie
         bouton_nouvelle_partie (Button) : Bouton permettant de faire une nouvelle partie
-        pos_source_selectionnee (Position) : Position de depart selectionnee
-        damier (Damier) : Le damier du jeu
-        TODO: AJOUTER VOS PROPRES ATTRIBUTS ICI!
+        position_cible_courante (Position) : Position cible prédéfinie
+
     """
 
     def __init__(self):
@@ -52,15 +50,9 @@ class FenetrePartie(Tk):
         # les Attributes ajoute par étudiant
         self.position_cible_courante = None
 
-        self.position_cible_courante = None
-
         # Affiche un message si le joueur doit prendre une pièce
         self.msg_prendre = Label(self)
         self.msg_prendre.grid()
-
-        # Affiche un message si le joueur faire un clic invalide
-        # self.msg_invalide = Label(self)
-        # self.msg_invalide.grid()
 
         # Affiche le nom du joueur qui joue actuellement
         self.msg_couleur = Label(self)
@@ -153,6 +145,12 @@ class FenetrePartie(Tk):
 
 
     def reset_tour(self):
+        """ Méthode permettant de réinitialiser les valeurs de certains attributs lors d'un changement de tour
+
+        À appeler à chaque fois qu'on veut mettre à jour le message.
+
+        """
+
         self.partie.position_source_selectionnee = None
         self.messages['text'] = ''
         self.messages['foreground'] = 'black'
@@ -160,6 +158,15 @@ class FenetrePartie(Tk):
         self.partie.position_source_forcee = None
 
     def change_joueur(self):
+        """ Méthode permettant changer de joueur.
+
+        À appeler à chaque fois qu'on veut mettre à jour le joueur.
+
+        Returns :
+            self.partie.couleur_joueur_courant (str) = Couleur du joueur qui joue son tour
+
+        """
+
         if self.partie.couleur_joueur_courant == "blanc":
             self.partie.couleur_joueur_courant = "noir"
         else:
@@ -185,6 +192,9 @@ class FenetrePartie(Tk):
 
         À appeler à chaque fois qu'on veut mettre à jour le message.
 
+        Returns:
+            msg_couleur (str) : Message affichant quel joueur joue son tour
+
         """
 
         couleur = self.partie.couleur_joueur_courant
@@ -192,6 +202,10 @@ class FenetrePartie(Tk):
         self.msg_couleur['text'] = "C'est le tour du joueur {}".format(couleur)
 
     def partie_terminee(self):
+
+        """Méthode qui indique la fin de la partie et le vainqueur.
+
+        """
 
         if not self.partie.damier.piece_de_couleur_peut_se_deplacer(self.partie.couleur_joueur_courant) and \
                 not self.partie.damier.piece_de_couleur_peut_faire_une_prise(self.partie.couleur_joueur_courant):
@@ -208,6 +222,15 @@ class FenetrePartie(Tk):
             self.after(100, self.partie_terminee)
 
     def message_prendre(self):
+
+        """Méthode qui actualise le Label msg_prendre et donne des informations au joueur.
+
+        À appeler à chaque fois qu'on veut mettre à jour le message.
+
+        Returns:
+            msg_couleur (str) : Message affichant si un joueur peut faire une prise ou non.
+
+        """
 
         if self.partie.doit_prendre == True:
             self.msg_prendre['foreground'] = 'black'
