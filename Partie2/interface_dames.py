@@ -102,13 +102,10 @@ class FenetrePartie(Tk):
             if self.partie.position_source_selectionnee is None:
                 self.messages['foreground'] = 'red'
                 self.messages['text'] = 'Erreur: Aucune pièce à cet endroit.'
-
             else:
                 cible_valide, msg_erreur = self.partie.position_cible_valide(position)
-
                 if cible_valide:
                     deplacement = self.canvas_damier.damier.deplacer(self.partie.position_source_selectionnee, position)
-
                     if deplacement == "prise" and self.canvas_damier.damier.piece_peut_faire_une_prise(position):
                         self.partie.doit_prendre = True
                         self.partie.position_source_forcee = position
@@ -116,12 +113,10 @@ class FenetrePartie(Tk):
                         self.messages['text'] = ''
                         self.messages['foreground'] = 'black'
                         self.canvas_damier.actualiser()
-
                     else:
                         self.canvas_damier.actualiser()
                         self.change_joueur()
                         self.reset_tour()
-
                 else:
                     self.messages['text'] = msg_erreur
                     self.messages['foreground'] = 'red'
@@ -139,6 +134,10 @@ class FenetrePartie(Tk):
                     self.messages['text'] = msg_erreur
                     self.messages['foreground'] = 'red'
 
+            else :
+                result, msg_erreur = self.partie.position_source_valide(position)
+                self.messages['text'] = msg_erreur
+                self.messages['foreground'] = 'red'
 
         self.joueur_en_cours()
         self.message_prendre()
@@ -199,7 +198,7 @@ class FenetrePartie(Tk):
 
         couleur = self.partie.couleur_joueur_courant
         self.msg_couleur['foreground'] = 'black'
-        self.msg_couleur['text'] = "C'est le tour du joueur {}".format(couleur)
+        self.msg_couleur['text'] = "C'est le tour du joueur {}.".format(couleur)
 
     def partie_terminee(self):
 
@@ -238,5 +237,6 @@ class FenetrePartie(Tk):
         else :
             self.msg_prendre['foreground'] = 'black'
             self.msg_prendre['text'] = ''
+
 
 

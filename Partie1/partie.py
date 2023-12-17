@@ -75,7 +75,7 @@ class Partie:
             return False, "La position sélectionnée ne contient pas une pièce."
 
         elif piece.couleur != self.couleur_joueur_courant:
-            return False, "La piece sélectionnée n'appartient pas au joueur actif"
+            return False, "La piece sélectionnée n'appartient pas au joueur actif."
 
         elif self.doit_prendre:
             if self.position_source_forcee is not None:
@@ -139,7 +139,7 @@ class Partie:
                 print(self.position_source_valide(pos_source)[1])
 
             else:
-                print("les valeurs entrees ne sont pas valides")
+                print("Les valeurs entrees ne sont pas valides")
         self.position_source_selectionnee = pos_source
 
         while not self.position_cible_valide(pos_cible)[0]:
