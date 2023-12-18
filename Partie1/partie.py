@@ -84,12 +84,12 @@ class Partie:
                 else:
                     return True, ''
             elif not self.damier.piece_peut_faire_une_prise(position_source):
-                return False, "Une prise est possible, le joueur doit choisir une position avec une prise"
+                return False, "Une prise est possible, le joueur doit choisir une position avec une prise."
             else:
                 return True, ''
 
         elif not (self.damier.piece_peut_se_deplacer(position_source) or self.damier.piece_peut_faire_une_prise(position_source)):
-            return False, "La piece sélectionnée n'a pas de mouvements possible"
+            return False, "La piece sélectionnée n'a pas de mouvements possible."
 
         else:
             return True, ''
@@ -139,7 +139,7 @@ class Partie:
                 print(self.position_source_valide(pos_source)[1])
 
             else:
-                print("Les valeurs entrees ne sont pas valides")
+                print("Les valeurs entrees ne sont pas valides.")
         self.position_source_selectionnee = pos_source
 
         while not self.position_cible_valide(pos_cible)[0]:
@@ -152,7 +152,7 @@ class Partie:
                 print(self.position_cible_valide(pos_cible)[1])
 
             else:
-                print("les valeurs entrees ne sont pas valides")
+                print("les valeurs entrees ne sont pas valides.")
 
         return pos_source, pos_cible
 

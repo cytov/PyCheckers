@@ -177,10 +177,12 @@ class FenetrePartie(Tk):
         self.partie = Partie()
         self.canvas_damier.damier = self.partie.damier
         self.canvas_damier.actualiser()
+        self.messages['foreground'] = 'black'
         self.messages['text'] = "Nouvelle partie commencée."
         self.partie.position_source_selectionnee = None
         self.position_cible_courante = None
         self.joueur_en_cours()
+        self.msg_prendre['text'] = ''
 
     def quitter_la_partie(self):
         """ Méthode permettant de quitter la fenêtre de la partie."""
@@ -233,7 +235,7 @@ class FenetrePartie(Tk):
 
         if self.partie.doit_prendre == True:
             self.msg_prendre['foreground'] = 'black'
-            self.msg_prendre['text'] = f"Le joueur doit prendre une pièce."
+            self.msg_prendre['text'] = f"Le joueur actif doit prendre une pièce."
         else :
             self.msg_prendre['foreground'] = 'black'
             self.msg_prendre['text'] = ''
