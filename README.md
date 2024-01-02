@@ -22,7 +22,6 @@ This project aims to provide a simple and enjoyable implementation of the tradit
 
 ## How to Play
 
-Make sure to clone the test-branch-V2 branch right now, as merging every change into the main branch will be coming in the future.
 To start the game, simply run the `main_partie2.py` file.
 The game is straighforward, open the game and start exploring.
 
@@ -31,10 +30,10 @@ The game is straighforward, open the game and start exploring.
 1. **Clone the repository to your local machine:**
 
     ```bash
-    git clone https://github.com/your-username/checkers-game.git
+    git clone https://github.com/cytov/PyCheckers.git
     ```
 
-2. **Navigate to the project directory and make sure to checkout the test-branch-V2 branch rather than main:**
+2. **Navigate to the project directory:**
 
     ```bash
     cd tp3
@@ -47,7 +46,7 @@ The game is straighforward, open the game and start exploring.
     ```
 
 ## Usage:
-incoming when the game is finished. (It's completely functional, but )
+incoming when the game is finished. (It's completely functional, but you will have to explore it on your own :) )
 
 
 We hope you enjoy playing our Checkers Game! If you have any suggestions or find issues, please open an [issue](https://github.com/cytov/tp3/issues).
