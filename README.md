@@ -5,7 +5,6 @@
 ## Table of Contents
 - [**Overview**](#overview)
 - [**Features**](#features)
-- [**How to Play**](#how-to-play)
 - [**Installation**](#installation)
 - [**Usage**](#usage)
 
@@ -19,11 +18,6 @@ This project aims to provide a simple and enjoyable implementation of the tradit
 - **Two-player mode.** (In the making)
 - **User-friendly GUI.**
 - **Git version control for collaborative development.**
-
-## How to Play
-
-To start the game, simply run the `main_partie2.py` file.
-The game is straighforward, open the game and start exploring.
 
 ## Installation
 
