@@ -1,6 +1,7 @@
 # Checkers Game in Python
 
-**Welcome to our Checkers Game project!** This implementation of the classic board game was a collaborative effort between **Ismail Arbaoui** and **Luc-Olivier Toupin** as part of **[Course/Project Name]**. The game is written in Python and utilizes Git for version control.
+**Welcome to our Checkers Game project!** This implementation of the classic board game was a collaborative effort between **Ismail Arbaoui** and **Luc-Olivier Toupin** as part of **Introduction à la programmation
+IFT-1004** as a final assignment for the course. The game is written in Python and utilizes Git for version control.
 
 ## Table of Contents
 - [**Overview**](#overview)
